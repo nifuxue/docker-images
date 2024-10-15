@@ -1,0 +1,21 @@
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM python:3.13.0
+
+# setup bash as default shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# set workdir to /tmp
+WORKDIR /tmp
+
+# install v97
+RUN apt-get update && \
+    apt-get install -y unzip && \
+    curl https://ssd.mathworks.cn/supportfiles/downloads/R2019b/Release/9/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2019b_Update_9_glnxa64.zip > mcr_v97.zip && \
+    unzip mcr_v97.zip -d mcr_v97 && \
+    cd mcr_v97 && ./install -mode silent -agreeToLicense yes && \
+    cd .. && rm mcr_v97.zip && rm -r mcr_v97 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# run setup.sh
+CMD ["bash"]
+# CMD ["./setup.sh", ". .venv/bin/activate && python rcwa_slave.py"]

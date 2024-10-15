@@ -1,0 +1,28 @@
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM mcr_v97
+
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
+
+# setup bash as default shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# change workdir to /rcwa
+WORKDIR /rcwa
+
+# Install flask
+RUN python -m venv .venv && . .venv/bin/activate && pip install flask
+
+# copy rcwa_comp, rcwa_slave.py, ld_library_path to /rcwa/
+COPY rcwa_comp rcwa_slave.py ld_library_path ./
+
+# copy setup.sh to /rcwa
+COPY setup.sh run.sh ./
+RUN chmod +x setup.sh run.sh
+
+# run setup.sh
+ENTRYPOINT ["./setup.sh"]
+CMD ["python", "rcwa_slave.py"]
